@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MiniSpring.Views.Pages.OnBoardPage"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             Title="On Board">
+
+
+
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <ControlTemplate x:Key="DockedBtn">
+                <Border StrokeThickness="0" WidthRequest="100" StrokeShape="RoundRectangle 20" Margin="5">
+                    <VerticalStackLayout Background="Transparent">
+                        <Image Source="{TemplateBinding Content}" Background="Transparent" HorizontalOptions="Center"/>
+
+                         <Label Background="Transparent" Text="{TemplateBinding Content}" HorizontalOptions="Center" TextColor="{StaticResource SpringBlue}" FontSize="Caption" FontAttributes="Bold" TextTransform="Uppercase"/>
+                    </VerticalStackLayout>
+                    
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroupList>
+                            <VisualStateGroup x:Name="CheckedStates">
+                             
+                                <VisualState x:Name="Checked">
+                                    <VisualState.Setters>
+
+                                        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryDark}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Unchecked">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="Transparent" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateGroupList>
+                    </VisualStateManager.VisualStateGroups>
+
+                   
+
+                </Border>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
+    <!-- First row is for the page content. Second row is for the bottom navigation bar. -->
+    <!-- * takes leftover space. We could set navigation bar's size to Auto, but since it's fixed size, and Microsoft suggests using Auto as few as possible, setting it to a fixed size is better. -->
+    <!-- For more info, check Caution at https://docs.microsoft.com/en-us/dotnet/maui/user-interface/layouts/grid#rows-and-columns -->
+    <Grid RowDefinitions="*,75"
+          IgnoreSafeArea="True" BackgroundColor="{StaticResource SpringSilver}">
+        <!-- Page content. -->
+        <ScrollView HorizontalScrollBarVisibility="Never">
+            <Grid RowDefinitions="200,*,*"
+                  RowSpacing="15"
+                  Padding="30,25,30,15">
+                <!-- General information. -->
+                <Border Grid.Row="0" BackgroundColor="{StaticResource SpringHihlighter}" StrokeThickness="0" StrokeShape="RoundRectangle 25" Margin="0"> 
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource Black}" Radius="60" Opacity="0.2" />
+                    </Border.Shadow>
+                    <Grid RowDefinitions="55,50,45,25"
+                          VerticalOptions="Center">
+                        <Border Stroke="{StaticResource SpringHihlighter}" Grid.Row="0">
+                            <Button ImageSource="more" HeightRequest="40" HorizontalOptions="End" Background="{StaticResource SpringHihlighter}" Margin="0 ,2 ,5 ,1" />
+                        </Border>
+                        <Border Grid.Row="1"
+                                StrokeThickness="0" StrokeShape="RoundRectangle 50"
+                                HorizontalOptions="Center">
+                            <Image Source="profilesim.png" WidthRequest="50" HeightRequest="50" Aspect="AspectFill" />
+                        </Border>
+                        <Label Grid.Row="2" Text="{Binding NameBannser}" FontSize="21" FontAttributes="Bold" LineBreakMode="NoWrap" TextColor="{StaticResource Primary}" HorizontalTextAlignment="Center" Padding="0,15,0,0" />
+                        <Label Grid.Row="3" Text="{Binding PreivilagesScored}" FontSize="14" TextColor="Black" HorizontalTextAlignment="Center" Padding="0,5,0,0" />
+ 
+                    </Grid>
+                </Border>
+
+                <!-- Overview text, notifications bell, and date. -->
+                <Grid Grid.Row="1"
+                      RowDefinitions="*" ColumnDefinitions="Auto,*,*" Margin="0">
+                    <Label Grid.Column="0" Text="Overview" FontAttributes="Bold" FontSize="22" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+
+                    <Image Grid.Column="1" Source="notifications" HeightRequest="24" HorizontalOptions="Start" />
+
+                    <!-- Binding DateTime.Now to label to show current date. -->
+                    <Label Grid.Column="2" Text="{Binding Source={x:Static system:DateTime.Now}, StringFormat='{0:d MMM, yyyy}'}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="End" />
+                </Grid>
+
+                <!-- Overview items. -->
+                <VerticalStackLayout Grid.Row="2"
+                                     BindableLayout.ItemsSource="{Binding OverviewItems}"
+                                     Spacing="18">
+                    <Button/>
+                    <Button/>
+                    <Button/>
+                    <Button/>
+                    <Button/>
+                    <Button/>
+                    <Button/>
+                    <Button/>
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Border StrokeThickness="0" StrokeShape="RoundRectangle 25"
+                                    HeightRequest="80">
+                                <Border.Shadow>
+                                    <Shadow Radius="60" Opacity="0.2" />
+                                </Border.Shadow>
+                                <Grid RowDefinitions="60" ColumnDefinitions="60,Auto,*,Auto"
+                                      ColumnSpacing="10" Padding="15,0,15,0" VerticalOptions="Center">
+                                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 20"
+                                            BackgroundColor="{StaticResource SpringHihlighter}">
+                                        <Image Source="{Binding IconSource}" HeightRequest="36" />
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" />
+                                        <Label Text="{Binding Details}" FontSize="12" />
+                                    </VerticalStackLayout>
+
+                                    <Label Grid.Column="3" Text="{Binding Amount, StringFormat='${0}'}" FontAttributes="Bold" VerticalOptions="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </Grid>
+        </ScrollView>
+
+      
+        <!-- Bottom navigation bar. -->
+        <Grid x:Name="bottomdocker" Grid.Row="1" ColumnDefinitions="*"  HorizontalOptions="CenterAndExpand">
+            
+        <Border StrokeThickness="0">
+            <Border.Shadow>
+                <Shadow Radius="40" Opacity="0.0" />
+            </Border.Shadow>
+
+                <ScrollView  Orientation="Horizontal" HorizontalOptions="CenterAndExpand"  HorizontalScrollBarVisibility="Never"  WidthRequest="{Binding Source={x:Reference bottomdocker}, Path=Width}" >
+
+                    <Grid HorizontalOptions="CenterAndExpand"  WidthRequest="{Binding Source={x:Reference bottomdocker}, Path=Width}" ColumnDefinitions="auto , auto, auto">
+
+
+                        <RadioButton HorizontalOptions="CenterAndExpand" Grid.Column="0"  IsChecked ="True"
+                                     HeightRequest="{Binding Source={x:Reference bottomdocker}, Path=Height}"  
+                                    
+                                     Content="home" x:Name="dockedhome" ControlTemplate="{StaticResource DockedBtn}" 
+                                     BackgroundColor="{StaticResource SpringSilver}"/>
+
+                        <RadioButton HorizontalOptions="CenterAndExpand" Grid.Column="1"   
+                                     HeightRequest="{Binding Source={x:Reference bottomdocker}, Path=Height}" 
+                                    
+                                     Content="account" x:Name="dockedaccount" ControlTemplate="{StaticResource DockedBtn}" 
+                                     BackgroundColor="{StaticResource SpringSilver}"/>
+                        
+                        <RadioButton HorizontalOptions="CenterAndExpand" Grid.Column="2"   
+                                     HeightRequest="{Binding Source={x:Reference bottomdocker}, Path=Height}" 
+                                    
+                                     Content="payments" x:Name="dockedpayments" ControlTemplate="{StaticResource DockedBtn}" 
+                                     BackgroundColor="{StaticResource SpringSilver}"/>
+
+
+                    </Grid>
+            </ScrollView>
+        </Border>
+        </Grid>
+    </Grid>
+</ContentPage>
