@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MiniSpring.Views.Pages.OnBoardPage"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
              Title="On Board">
 
 
@@ -11,11 +12,13 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <ControlTemplate x:Key="DockedBtn">
-                <Border StrokeThickness="0" WidthRequest="100" StrokeShape="RoundRectangle 20" Margin="5">
+                <Border StrokeThickness="0" WidthRequest="100" StrokeShape="RoundRectangle 20" Margin="5 ,2 ,5 ,10">
                     <VerticalStackLayout Background="Transparent">
-                        <Image Source="{TemplateBinding Content}" Background="Transparent" HorizontalOptions="Center"/>
+                        
+                        <Image Source="{TemplateBinding Content}" HeightRequest="24" Background="Transparent" HorizontalOptions="Center"/>
 
-                         <Label Background="Transparent" Text="{TemplateBinding Content}" HorizontalOptions="Center" TextColor="{StaticResource SpringBlue}" FontSize="Caption" FontAttributes="Bold" TextTransform="Uppercase"/>
+                        <Label Background="Transparent" Text="{TemplateBinding Content}" HorizontalOptions="Center" TextColor="{StaticResource SpringBlue}" FontSize="Caption" FontAttributes="Bold" TextTransform="Uppercase"/>
+                
                     </VerticalStackLayout>
                     
                     <VisualStateManager.VisualStateGroups>
@@ -24,13 +27,14 @@
                              
                                 <VisualState x:Name="Checked">
                                     <VisualState.Setters>
-
+                                        <Setter Property="Scale" Value="0.9" />
                                         <Setter Property="BackgroundColor" Value="{StaticResource PrimaryDark}" />
                                     </VisualState.Setters>
                                 </VisualState>
                                 <VisualState x:Name="Unchecked">
                                     <VisualState.Setters>
                                         <Setter Property="BackgroundColor" Value="Transparent" />
+                                        <Setter Property="Scale" Value="0.79" />
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
@@ -62,7 +66,31 @@
                     <Grid RowDefinitions="55,50,45,25"
                           VerticalOptions="Center">
                         <Border Stroke="{StaticResource SpringHihlighter}" Grid.Row="0">
-                            <Button ImageSource="more" HeightRequest="40" HorizontalOptions="End" Background="{StaticResource SpringHihlighter}" Margin="0 ,2 ,5 ,1" />
+                             
+                            <ContentView  HeightRequest="30" WidthRequest="30" HorizontalOptions="End" Background="Transparent" Margin="0 ,2 ,15 ,1" >
+
+                                <ContentView.Content>
+                                    <Border StrokeThickness="0" WidthRequest="28" StrokeShape="RoundRectangle 20" Margin="1">
+                                        <AbsoluteLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+
+                                            <Image Source="more" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Aspect="AspectFill"/>
+
+                                        </AbsoluteLayout>
+                                    </Border>
+                                </ContentView.Content>
+                                
+                                <the49:ContextMenu.Menu>
+                                    <DataTemplate>
+                                        <the49:Menu>
+                                            <the49:Action Title="Upload documents" />
+                                            <the49:Action Title="Copy" />
+                                            <the49:Action Title="Cut" />
+                                            <the49:Action Title="Paste" />
+                                        </the49:Menu>
+                                    </DataTemplate>
+                                </the49:ContextMenu.Menu>
+                            </ContentView>
+                            
                         </Border>
                         <Border Grid.Row="1"
                                 StrokeThickness="0" StrokeShape="RoundRectangle 50"
@@ -143,19 +171,19 @@
                                      HeightRequest="{Binding Source={x:Reference bottomdocker}, Path=Height}"  
                                     
                                      Content="home" x:Name="dockedhome" ControlTemplate="{StaticResource DockedBtn}" 
-                                     BackgroundColor="{StaticResource SpringSilver}"/>
+                                     BackgroundColor="{StaticResource SpringSilver}" />
 
                         <RadioButton HorizontalOptions="CenterAndExpand" Grid.Column="1"   
                                      HeightRequest="{Binding Source={x:Reference bottomdocker}, Path=Height}" 
                                     
                                      Content="account" x:Name="dockedaccount" ControlTemplate="{StaticResource DockedBtn}" 
-                                     BackgroundColor="{StaticResource SpringSilver}"/>
+                                     BackgroundColor="{StaticResource SpringSilver}" />
                         
                         <RadioButton HorizontalOptions="CenterAndExpand" Grid.Column="2"   
                                      HeightRequest="{Binding Source={x:Reference bottomdocker}, Path=Height}" 
                                     
                                      Content="payments" x:Name="dockedpayments" ControlTemplate="{StaticResource DockedBtn}" 
-                                     BackgroundColor="{StaticResource SpringSilver}"/>
+                                     BackgroundColor="{StaticResource SpringSilver}" />
 
 
                     </Grid>

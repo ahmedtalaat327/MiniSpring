@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using The49.Maui.ContextMenu;
 
 namespace MiniSpring
 {
@@ -11,6 +12,7 @@ namespace MiniSpring
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
+                .UseContextMenu()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
