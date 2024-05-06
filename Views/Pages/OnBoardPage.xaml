@@ -4,6 +4,7 @@
              x:Class="MiniSpring.Views.Pages.OnBoardPage"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
+             xmlns:micro="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
              Title="On Board">
 
 
@@ -116,35 +117,29 @@
 
                 <!-- Overview items. -->
                 <VerticalStackLayout Grid.Row="2"
-                                     BindableLayout.ItemsSource="{Binding OverviewItems}"
-                                     Spacing="18">
-                    <Button/>
-                    <Button/>
-                    <Button/>
-                    <Button/>
-                    <Button/>
-                    <Button/>
-                    <Button/>
-                    <Button/>
+                                     BindableLayout.ItemsSource="{Binding OverViewSubBoard}"
+                                     Spacing="18"
+                                     IsVisible="{Binding ActiveViewChart}">
+                 
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>
-                            <Border StrokeThickness="0" StrokeShape="RoundRectangle 25"
-                                    HeightRequest="80">
+                            <Border x:Name="trmpl" StrokeThickness="0" StrokeShape="RoundRectangle 25"
+                                    HeightRequest="380" BackgroundColor="{StaticResource PrimaryDark}">
                                 <Border.Shadow>
                                     <Shadow Radius="60" Opacity="0.2" />
                                 </Border.Shadow>
-                                <Grid RowDefinitions="60" ColumnDefinitions="60,Auto,*,Auto"
-                                      ColumnSpacing="10" Padding="15,0,15,0" VerticalOptions="Center">
-                                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 20"
-                                            BackgroundColor="{StaticResource SpringHihlighter}">
-                                        <Image Source="{Binding IconSource}" HeightRequest="36" />
-                                    </Border>
-                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                                        <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" />
-                                        <Label Text="{Binding Details}" FontSize="12" />
+                                <Grid  RowDefinitions="80,*"
+                                      ColumnSpacing="10" Padding="15,5,15,5" VerticalOptions="StartAndExpand">
+                                   
+                                    <VerticalStackLayout  Grid.Row="0" Margin="0, 5, 0, 0" VerticalOptions="StartAndExpand" HeightRequest="80"> 
+                                        <Label x:Name="boardname" Text="{Binding Title}" FontSize="16" FontAttributes="Bold" HeightRequest="40" VerticalOptions="Start" />
+                                        <Label Text="{Binding Details}" FontSize="12" HeightRequest="40" VerticalOptions="Start" />
                                     </VerticalStackLayout>
 
-                                    <Label Grid.Column="3" Text="{Binding Amount, StringFormat='${0}'}" FontAttributes="Bold" VerticalOptions="Center" />
+                                    <micro:ChartView x:Name="holder" HeightRequest="300" Grid.Row="1" BackgroundColor="{StaticResource PrimaryDark}" 
+                                     Chart="{Binding MyChart}"  />
+                                    
+
                                 </Grid>
                             </Border>
                         </DataTemplate>

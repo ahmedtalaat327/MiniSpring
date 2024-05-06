@@ -1,19 +1,46 @@
 ﻿
 using AccioOracleKit;
+using Microcharts;
 using Oracle.ManagedDataAccess.Client;
 using Spring.AccioHelpers;
 using Spring.Data;
 using Spring.StaticVM;
 using Spring.ViewModel.Base;
 using Spring.ViewModel.Command;
-using System;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
-using static Spring.ViewModel.LoginViewModel;
+
 
 
 namespace Spring.ViewModel
 {
+    /// <summary>
+    /// this class represent the charts board propeeties for each board
+    /// </summary>
+    public class ChartBoard : BaseViewModel
+    {
+        #region Private Fields
+        private string view_name = "noname";
+        private Chart View_body = null;
+        #endregion
+        #region Public props
+        public string Title { get; set; } = "no_title";
+        public string Details { get; set; } = "no_detials";
+        public required int Count { get; set; } = 0;
+        //when set this property you must update the property inside the vmcentral - docking this for feeding the basepagevm
+        public required string NameInRecord { get { return view_name; } set { if (view_name != value) StaticVM.VMCentral.DockingManagerViewModel.ViewName = view_name = value; } }
+        public bool ActiveViewChart { get => StaticVM.VMCentral.BasePageViewModel.ActiveView; }
+        //does not support auto property changed
+        public Chart MyChart { get {
+                return View_body;
+            }
+            set { 
+                if (View_body != value) View_body = value;
+                OnPropertyChanged(nameof(MyChart)); }
+        } 
+        #endregion
+
+    }
     public class DockingManagerViewModel : BaseViewModel
     {
 
@@ -65,7 +92,9 @@ namespace Spring.ViewModel
         /// this is related to how pages will be managed
         /// </summary>
         public string ViewName { get; set; } = "none";
-        public string PreivilagesScored { get; set; } = "Groupe: "; 
+        public string PreivilagesScored { get; set; } = "Groupe: ";
+
+        public ObservableCollection<ChartBoard> OverViewSubBoard { get; set; } = new ObservableCollection<ChartBoard>();
         #region commands
         /// <summary>
         /// Our unique way to handle login comparison
@@ -79,10 +108,14 @@ namespace Spring.ViewModel
         {
             Loading = false;
 
-
+             
             LogoutCommand = new RelyCommand(async () => { await SignOutFromServerSQL(); });
 
             FetchAllRulesGroupes = new RelyCommand(async () => { await GetRuleViews(); });
+
+
+             
+
         }
         /// <summary>
         /// check current tunnle conn

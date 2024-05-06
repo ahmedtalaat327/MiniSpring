@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using Microcharts.Maui;
 using Microsoft.Extensions.Logging;
 using The49.Maui.ContextMenu;
 
@@ -13,6 +14,7 @@ namespace MiniSpring
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
                 .UseContextMenu()
+                .UseMicrocharts()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
