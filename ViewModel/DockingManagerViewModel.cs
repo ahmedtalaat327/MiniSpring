@@ -2,6 +2,7 @@
 using AccioOracleKit;
 using Microcharts;
 using Oracle.ManagedDataAccess.Client;
+using SkiaSharp;
 using Spring.AccioHelpers;
 using Spring.Data;
 using Spring.StaticVM;
@@ -101,6 +102,8 @@ namespace Spring.ViewModel
         /// </summary>
         public ICommand LogoutCommand { get; set; }
         public ICommand FetchAllRulesGroupes { get; set; }
+
+        public ICommand LoadCurrentChartsCommands { get; set; }
         #endregion
 
         #endregion
@@ -113,9 +116,10 @@ namespace Spring.ViewModel
 
             FetchAllRulesGroupes = new RelyCommand(async () => { await GetRuleViews(); });
 
+            LoadCurrentChartsCommands = new RelyCommand(async () => { await GetChartsBuild(); });
 
-             
 
+         
         }
         /// <summary>
         /// check current tunnle conn
@@ -237,6 +241,55 @@ namespace Spring.ViewModel
                 }
             });
 
+        }
+        private async Task GetChartsBuild()
+        {
+            await RunCommand(() => this.Loading, async () =>
+            {
+                await Task.Delay(1);
+
+           
+
+
+                /*
+                        ChartEntry[] entrs = new ChartEntry[] { 
+                       // new ChartEntry(21){Label="HVC",ValueLabel="112",Color = SKColor.Parse("#c64a44")},
+                       // new ChartEntry(73){Label="Engineering",ValueLabel="432",Color = SKColor.Parse("#0099ff")},
+                       // new ChartEntry(6){Label="IT",ValueLabel="3",Color = SKColor.Parse("#b3db86")},
+
+
+                        };
+                */
+
+              
+               
+
+
+                List<string> colorNames = new List<string>() { "#c64a44", "#0099ff", "#b3db86", "#1e0000", "#601aa9", "#b45f06", "#0c343d"
+                                                      , "#CA6F1E", "#0779ff","#13aff12"};
+
+            List<ChartEntry> entriess = new List<ChartEntry>();
+
+            for (int k = 0; k < VMCentral.UsersStatisticsViewModel.AllCounters.Count; k++)
+            {
+                int all = 0;
+                foreach (string co in VMCentral.UsersStatisticsViewModel.AllCounters)
+                {
+                    all = +Int32.Parse(co);
+                }
+
+                int perc = Int32.Parse(VMCentral.UsersStatisticsViewModel.AllCounters[k]) / all;
+                entriess.Add(new ChartEntry(perc) { Label = $"{VMCentral.UsersStatisticsViewModel.AllDepartments[k]}", ValueLabel = $"{VMCentral.UsersStatisticsViewModel.AllCounters[k]}", Color = SKColor.Parse($"{colorNames}") });
+            }
+
+
+            VMCentral.DockingManagerViewModel.OverViewSubBoard[0].MyChart = new DonutChart()
+            {
+                Entries = entriess.ToArray(),
+                BackgroundColor = SKColors.Transparent
+            };
+
+            });
         }
     }
 }

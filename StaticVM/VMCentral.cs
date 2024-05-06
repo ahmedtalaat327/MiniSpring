@@ -16,6 +16,7 @@ namespace Spring.StaticVM
         /// </summary>
         public static BasePageViewModel BasePageViewModel = new BasePageViewModel();
 
+        public static UsersStatisticsViewModel UsersStatisticsViewModel = new UsersStatisticsViewModel();   
         
 
     }
