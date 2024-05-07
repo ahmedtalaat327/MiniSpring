@@ -18,5 +18,7 @@ MVVM same as Spring version but this time with MAUI framework.<br/><br/>
 <a href="https://github.com/othneildrew/Best-README-Template">
     <img src="Resources/Images/Screenshot_20240427_022236 (1).jpg" alt="Logo" width="180" >
   </a>
-
+<a href="https://github.com/othneildrew/Best-README-Template">
+    <img src="Resources/Images/438237580_807836414102280_6680294393607955056_n.jpg" alt="Logo" width="180" >
+  </a>
   </div>

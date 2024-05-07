@@ -278,8 +278,8 @@ namespace Spring.ViewModel
                     all = +Int32.Parse(co);
                 }
 
-                int perc = Int32.Parse(VMCentral.UsersStatisticsViewModel.AllCounters[k]) / all;
-                entriess.Add(new ChartEntry(perc) { Label = $"{VMCentral.UsersStatisticsViewModel.AllDepartments[k]}", ValueLabel = $"{VMCentral.UsersStatisticsViewModel.AllCounters[k]}", Color = SKColor.Parse($"{colorNames}") });
+                var perc = 100*(float.Parse(VMCentral.UsersStatisticsViewModel.AllCounters[k]) / all);
+                entriess.Add(new ChartEntry(perc) { Label = $"{VMCentral.UsersStatisticsViewModel.AllDepartments[k].Name}", ValueLabel = $"{VMCentral.UsersStatisticsViewModel.AllCounters[k]}", Color = SKColor.Parse($"{colorNames[k]}") });
             }
 
 

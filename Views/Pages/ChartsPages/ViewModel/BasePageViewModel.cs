@@ -8,6 +8,11 @@ using System.Windows.Input;
 namespace MiniSpring.Views.Pages.ChartsPages.ViewModel
 {
     
+    public enum CheckRulesPhase
+    {
+        Non = 0,
+        InChecking = 1, 
+    }
      
      public class Rule
      {
@@ -31,6 +36,7 @@ namespace MiniSpring.Views.Pages.ChartsPages.ViewModel
             /// Loading flag for prgress bar visible or not
             /// </summary>
             public bool Loading { get { return WaitingProgress; } }
+            public CheckRulesPhase CheckRPhase { get; set; }
             /// <summary>
             /// Current progress bar state
             /// </summary>
@@ -56,8 +62,7 @@ namespace MiniSpring.Views.Pages.ChartsPages.ViewModel
                 RuleRecords.Clear();
 
 
-                await RunCommand(() => this.WaitingProgress, async () =>
-                {
+             
                     await Task.Delay(1);
 
 
@@ -88,7 +93,7 @@ namespace MiniSpring.Views.Pages.ChartsPages.ViewModel
                         VMCentral.DockingManagerViewModel.MyAppOnlyObjctConn.Dispose(); VMCentral.DockingManagerViewModel.MyAppOnlyObjctConn.Close();
 
                     }
-                });
+               
 
             }
             /// <summary>
@@ -116,7 +121,8 @@ namespace MiniSpring.Views.Pages.ChartsPages.ViewModel
 
 
                 }
-            }
+              
+        }
             /// <summary>
             /// Procedure..
             /// </summary>
@@ -124,10 +130,15 @@ namespace MiniSpring.Views.Pages.ChartsPages.ViewModel
             private async Task FindMyActiveView()
             {
 
-                await CollectFromRules();
-                await CompareCurrentViews();
+            CheckRPhase = CheckRulesPhase.InChecking;
 
-            }
+            await RunCommand(() => this.WaitingProgress, async () =>
+        {
+            await CollectFromRules();
+            await CompareCurrentViews();
+        });
+           
+        }
         }
     
       }

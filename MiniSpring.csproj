@@ -69,10 +69,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiImage Remove="Resources\Images\438237580_807836414102280_6680294393607955056_n.jpg" />
 	  <MauiImage Remove="Resources\Images\Screenshot_20240427_022236 %281%29.jpg" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Images\438237580_807836414102280_6680294393607955056_n.jpg" />
 	  <None Remove="Resources\Images\Screenshot_20240427_022236 %281%29.jpg" />
 	</ItemGroup>
 

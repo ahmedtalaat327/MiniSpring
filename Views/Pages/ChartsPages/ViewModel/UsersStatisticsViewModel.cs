@@ -8,6 +8,12 @@ using System.Windows.Input;
 
 namespace MiniSpring.Views.Pages.ChartsPages.ViewModel
 {
+    public enum LoadDataPhase
+    {
+        Non = 0,
+        InLoad = 1
+       
+    }
     public class UsersStatisticsViewModel : BaseViewModel
     {
         #region Public Properties
@@ -15,6 +21,7 @@ namespace MiniSpring.Views.Pages.ChartsPages.ViewModel
 
         public List<string> AllCounters = new List<string>();
         public bool LoadingChartData { get; set; }
+        public LoadDataPhase LoadPhase { get; set; }
         public bool Automated { get; set; }
         //DispatcherTimer AutoUpdate { get; set; }
         #endregion
@@ -58,7 +65,7 @@ namespace MiniSpring.Views.Pages.ChartsPages.ViewModel
         /// <returns></returns>
         private async Task MeasureMyData()
         {
-
+            LoadPhase = LoadDataPhase.InLoad;
             await RunCommand(() => LoadingChartData, async () =>
             {
                 //this check happens only her if the connection is not established due to error in start of the app
@@ -77,6 +84,7 @@ namespace MiniSpring.Views.Pages.ChartsPages.ViewModel
                 }
 
             });
+          
         }
         /// <summary>
         /// Read all depts from sql-exec
