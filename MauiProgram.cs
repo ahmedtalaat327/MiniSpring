@@ -7,6 +7,7 @@ namespace MiniSpring
 {
     public static class MauiProgram
     {
+        public static bool F_Load { get; set; } = true;
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();

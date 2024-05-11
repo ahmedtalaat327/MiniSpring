@@ -1,4 +1,5 @@
 ﻿using MiniSpring.Views.Pages;
+using Spring.StaticVM;
 
 namespace MiniSpring
 {
@@ -13,6 +14,21 @@ namespace MiniSpring
             //onboard page
             Routing.RegisterRoute(nameof(OnBoardPage), typeof(OnBoardPage));
 
+
+            this.Navigating += AppShell_Navigating;
         }
+
+        private void AppShell_Navigating(object? sender, ShellNavigatingEventArgs e)
+        {
+            base.OnNavigating(e);
+
+            if (e.Source == ShellNavigationSource.Pop)
+                {
+                    e.Cancel();
+                }
+                
+           
+        }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿
 using AccioOracleKit;
 using Microcharts;
+using MiniSpring.Views.Pages.ChartsPages.ViewModel;
 using Oracle.ManagedDataAccess.Client;
 using SkiaSharp;
 using Spring.AccioHelpers;
@@ -21,25 +22,146 @@ namespace Spring.ViewModel
     public class ChartBoard : BaseViewModel
     {
         #region Private Fields
-        private string view_name = "noname";
         private Chart View_body = null;
         #endregion
         #region Public props
         public string Title { get; set; } = "no_title";
         public string Details { get; set; } = "no_detials";
-        public required int Count { get; set; } = 0;
         //when set this property you must update the property inside the vmcentral - docking this for feeding the basepagevm
-        public required string NameInRecord { get { return view_name; } set { if (view_name != value) StaticVM.VMCentral.DockingManagerViewModel.ViewName = view_name = value; } }
-        public bool ActiveViewChart { get => StaticVM.VMCentral.BasePageViewModel.ActiveView; }
+        public required string NameInRecord { get; set; }
+        public bool ActiveViewChart { get; set; } = false;
         //does not support auto property changed
         public Chart MyChart { get {
                 return View_body;
             }
-            set { 
-                if (View_body != value) View_body = value;
-                OnPropertyChanged(nameof(MyChart)); }
-        } 
+            set {
+                if (View_body != value)
+                {
+                   
+                    View_body = value;
+                    OnPropertyChanged(nameof(MyChart));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Loading flag for prgress bar visible or not
+        /// </summary>
+        public bool Loading { get { return WaitingProgress; } }
+        public CheckRulesPhase CheckRPhase { get; set; }
+        /// <summary>
+        /// Current progress bar state
+        /// </summary>
+        public bool WaitingProgress { get; set; }
         #endregion
+        #region Private Property
+
+        private List<MiniSpring.Views.Pages.ChartsPages.ViewModel.Rule> RuleRecords = new System.Collections.Generic.List<MiniSpring.Views.Pages.ChartsPages.ViewModel.Rule>();
+        #endregion
+
+        #region Commnands
+        public ICommand CheckViewStateOnRules { get; set; }
+        #endregion
+        public ChartBoard()
+        {
+
+            ActiveViewChart = false;
+
+            CheckViewStateOnRules = new RelyCommand(async () => await FindMyActiveView());
+
+            CheckViewStateOnRules.Execute(true);
+
+
+
+        }
+
+        /// <summary>
+        /// this func is mainly depend on collecting all records from rules table
+        /// depending on dept_id from logged user what ever admin or not 
+        /// then save the results in list created for specific purpose.
+        /// </summary>
+        private async Task CollectFromRules()
+        {
+            RuleRecords.Clear();
+
+
+
+            await Task.Delay(1);
+
+
+            var sqlCMD = Scripts.FetchMyData(VMCentral.DockingManagerViewModel.MyAppOnlyObjctConn,
+           "rules",
+           new string[] { "rule_id", "rule_view", "dept_id", "rule_level" }, new string[] { "dept_id" }, new string[] { VMCentral.DockingManagerViewModel.loggedUser.DepartmentId.ToString() }, "=", "and", true, "rule_id");
+
+            try
+            {
+                OracleDataReader dr = sqlCMD.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    RuleRecords.Add(
+                        new MiniSpring.Views.Pages.ChartsPages.ViewModel.Rule
+                        {
+                            ViewName = dr["rule_view"].ToString(),
+                            Level = dr["rule_level"].ToString()
+
+                        });
+                }
+            }
+            catch (Exception xorcl)
+            {
+                //for debug purposes
+                Console.WriteLine(xorcl.Message);
+                //Connection error for somereason so aggresive close that connection
+                VMCentral.DockingManagerViewModel.MyAppOnlyObjctConn.Dispose(); VMCentral.DockingManagerViewModel.MyAppOnlyObjctConn.Close();
+
+            }
+
+
+        }
+        /// <summary>
+        /// Compare all records we have
+        /// </summary>
+        /// <param name="tag_name"></param>
+        /// <returns></returns>
+        private async Task CompareCurrentViews()
+        {
+            await Task.Delay(12);
+
+            foreach (var rule in RuleRecords)
+            {
+                if (rule.ViewName.Contains(NameInRecord) && rule.Level == VMCentral.DockingManagerViewModel.loggedUser.UserAuthLevel)
+                {
+                    ActiveViewChart = true;
+                    OnPropertyChanged(nameof(ActiveViewChart));
+                }
+                if (rule.ViewName.Contains("all") && rule.Level == VMCentral.DockingManagerViewModel.loggedUser.UserAuthLevel)
+                {
+                    ActiveViewChart = true;
+                    OnPropertyChanged(nameof(ActiveViewChart));
+
+                }
+
+
+            }
+
+        }
+        /// <summary>
+        /// Procedure..
+        /// </summary>
+        /// <returns></returns>
+        public async Task FindMyActiveView()
+        {
+
+            CheckRPhase = CheckRulesPhase.InChecking;
+
+            await RunCommand(() => this.WaitingProgress, async () =>
+            {
+                await CollectFromRules();
+                await CompareCurrentViews();
+            });
+
+        }
 
     }
     public class DockingManagerViewModel : BaseViewModel
@@ -104,22 +226,23 @@ namespace Spring.ViewModel
         public ICommand FetchAllRulesGroupes { get; set; }
 
         public ICommand LoadCurrentChartsCommands { get; set; }
+
+        public ICommand RefreshAllChartsCollectedCommnads { get; set; }
         #endregion
 
         #endregion
         public DockingManagerViewModel()
         {
-            Loading = false;
+            Loading = false; PreivilagesScored = "Groupe: ";
 
-             
             LogoutCommand = new RelyCommand(async () => { await SignOutFromServerSQL(); });
 
             FetchAllRulesGroupes = new RelyCommand(async () => { await GetRuleViews(); });
 
             LoadCurrentChartsCommands = new RelyCommand(async () => { await GetChartsBuild(); });
 
+           
 
-         
         }
         /// <summary>
         /// check current tunnle conn
@@ -127,11 +250,11 @@ namespace Spring.ViewModel
         /// <returns></returns>
         public async Task<OracleConnection> ReadyMyDatabaseConn()
         {
-                if(_firstLoad)
+            if (_firstLoad)
                 MyAppOnlyObjctConn = await GetOracleConnection(false);
 
-                return  MyAppOnlyObjctConn;
-            
+            return MyAppOnlyObjctConn;
+
 
         }
         /// <summary>
@@ -174,7 +297,7 @@ namespace Spring.ViewModel
                     await TerminateCurrentConn();
                     SuccessLogOut = true;
                 }
-                catch(Exception rt)
+                catch (Exception rt)
                 {
                     SuccessLogOut = false;
 
@@ -203,43 +326,44 @@ namespace Spring.ViewModel
 
         private async Task GetRuleViews()
         {
-           await RunCommand(() => this.Loading, async () =>
-            {
-                await Task.Delay(1);
+            await RunCommand(() => this.Loading, async () =>
+             {
+                 await Task.Delay(1);
 
 
-                var sqlCMD = Scripts.FetchMyData(VMCentral.DockingManagerViewModel.MyAppOnlyObjctConn,
-               "rules",
-               new string[] { "rule_id", "rule_view", "dept_id", "rule_level" }, new string[] { "dept_id","rule_level" }, new string[] { VMCentral.DockingManagerViewModel.loggedUser.DepartmentId.ToString(), $"'{VMCentral.DockingManagerViewModel.loggedUser.UserAuthLevel}'" }, "=", "and", true, "rule_id");
+                 var sqlCMD = Scripts.FetchMyData(VMCentral.DockingManagerViewModel.MyAppOnlyObjctConn,
+                "rules",
+                new string[] { "rule_id", "rule_view", "dept_id", "rule_level" }, new string[] { "dept_id", "rule_level" }, new string[] { VMCentral.DockingManagerViewModel.loggedUser.DepartmentId.ToString(), $"'{VMCentral.DockingManagerViewModel.loggedUser.UserAuthLevel}'" }, "=", "and", true, "rule_id");
 
-                try
-                {
-                    OracleDataReader dr = sqlCMD.ExecuteReader();
+                 try
+                 {
+                     OracleDataReader dr = sqlCMD.ExecuteReader();
 
-                    while (dr.Read())
-                    {
-                       
-                          var m_rule =  new Rule
-                            {
-                                ViewName = dr["rule_view"].ToString(),
-                                Level = dr["rule_level"].ToString()
+                     while (dr.Read())
+                     {
 
-                            };
-                        PreivilagesScored += $" {m_rule.ViewName}";
-                    }
+                         var m_rule = new MiniSpring.Views.Pages.ChartsPages.ViewModel.Rule
+                         {
+                             ViewName = dr["rule_view"].ToString(),
+                             Level = dr["rule_level"].ToString()
+
+                         };
+                         PreivilagesScored += $" {m_rule.ViewName}";
+                     }
 
 
-                    
-                }
-                catch (Exception xorcl)
-                {
-                    //for debug purposes
-                    Console.WriteLine(xorcl.Message);
-                    //Connection error for somereason so aggresive close that connection
-                    VMCentral.DockingManagerViewModel.MyAppOnlyObjctConn.Dispose(); VMCentral.DockingManagerViewModel.MyAppOnlyObjctConn.Close();
 
-                }
-            });
+                 }
+                 catch (Exception xorcl)
+                 {
+                     //for debug purposes
+                     Console.WriteLine(xorcl.Message);
+                     //Connection error for somereason so aggresive close that connection
+                     VMCentral.DockingManagerViewModel.MyAppOnlyObjctConn.Dispose(); VMCentral.DockingManagerViewModel.MyAppOnlyObjctConn.Close();
+
+                 }
+             });
+
 
         }
         private async Task GetChartsBuild()
@@ -248,7 +372,8 @@ namespace Spring.ViewModel
             {
                 await Task.Delay(1);
 
-           
+
+
 
 
                 /*
@@ -261,34 +386,53 @@ namespace Spring.ViewModel
                         };
                 */
 
-              
-               
+
+
 
 
                 List<string> colorNames = new List<string>() { "#c64a44", "#0099ff", "#b3db86", "#1e0000", "#601aa9", "#b45f06", "#0c343d"
                                                       , "#CA6F1E", "#0779ff","#13aff12"};
 
-            List<ChartEntry> entriess = new List<ChartEntry>();
+                List<ChartEntry> entriess = new List<ChartEntry>();
 
-            for (int k = 0; k < VMCentral.UsersStatisticsViewModel.AllCounters.Count; k++)
-            {
-                int all = 0;
-                foreach (string co in VMCentral.UsersStatisticsViewModel.AllCounters)
+                for (int k = 0; k < VMCentral.UsersStatisticsViewModel.AllCounters.Count; k++)
                 {
-                    all = +Int32.Parse(co);
+                    int all = 0;
+                    foreach (string co in VMCentral.UsersStatisticsViewModel.AllCounters)
+                    {
+                        all = +Int32.Parse(co);
+                    }
+
+                    var perc = 100 * (float.Parse(VMCentral.UsersStatisticsViewModel.AllCounters[k]) / all);
+                    entriess.Add(new ChartEntry(perc) { Label = $"{VMCentral.UsersStatisticsViewModel.AllDepartments[k].Name}", ValueLabel = $"{VMCentral.UsersStatisticsViewModel.AllCounters[k]}", Color = SKColor.Parse($"{colorNames[k]}") });
                 }
 
-                var perc = 100*(float.Parse(VMCentral.UsersStatisticsViewModel.AllCounters[k]) / all);
-                entriess.Add(new ChartEntry(perc) { Label = $"{VMCentral.UsersStatisticsViewModel.AllDepartments[k].Name}", ValueLabel = $"{VMCentral.UsersStatisticsViewModel.AllCounters[k]}", Color = SKColor.Parse($"{colorNames[k]}") });
-            }
 
 
-            VMCentral.DockingManagerViewModel.OverViewSubBoard[0].MyChart = new DonutChart()
-            {
-                Entries = entriess.ToArray(),
-                BackgroundColor = SKColors.Transparent
-            };
+                VMCentral.DockingManagerViewModel.OverViewSubBoard[0].MyChart = new DonutChart()
+                {
+                    Entries = entriess.ToArray(),
+                    BackgroundColor = SKColor.Parse("ac99ea"),
+                    LabelTextSize = 22,
+                    LabelColor = SKColor.Parse("#5a11b6"),
 
+
+                };
+
+
+                foreach (var brd in VMCentral.DockingManagerViewModel.OverViewSubBoard.ToList())
+                {
+                    if (!brd.ActiveViewChart)
+                        VMCentral.DockingManagerViewModel.OverViewSubBoard.Remove(brd);
+                }
+
+
+                RefreshAllChartsCollectedCommnads =
+                new RelyCommand(async () => { await
+                 Task.Run(() => { 
+                VMCentral.UsersStatisticsViewModel.GetCountingAndStoreThem.Execute(true);
+                 });
+                });
             });
         }
     }

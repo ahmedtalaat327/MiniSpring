@@ -83,10 +83,9 @@
                                 <the49:ContextMenu.Menu>
                                     <DataTemplate>
                                         <the49:Menu>
-                                            <the49:Action Title="Upload documents" />
-                                            <the49:Action Title="Copy" />
-                                            <the49:Action Title="Cut" />
-                                            <the49:Action Title="Paste" />
+                                            <the49:Action Title="My Account" />
+                                            <the49:Action Title="Refresh"  Command="{Binding RefreshAllChartsCollectedCommnads}" />
+                                            <the49:Action Title="Logout!"/>
                                         </the49:Menu>
                                     </DataTemplate>
                                 </the49:ContextMenu.Menu>
@@ -119,7 +118,7 @@
                 <VerticalStackLayout Grid.Row="2"
                                      BindableLayout.ItemsSource="{Binding OverViewSubBoard}"
                                      Spacing="18"
-                                     IsVisible="{Binding ActiveViewChart}">
+                                     >
                  
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>

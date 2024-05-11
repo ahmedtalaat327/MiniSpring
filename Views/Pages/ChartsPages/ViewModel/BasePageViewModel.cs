@@ -8,11 +8,11 @@ using System.Windows.Input;
 namespace MiniSpring.Views.Pages.ChartsPages.ViewModel
 {
     
-    public enum CheckRulesPhase
-    {
-        Non = 0,
-        InChecking = 1, 
-    }
+     public enum CheckRulesPhase
+     {
+         Non = 0,
+         InChecking = 1, 
+     }
      
      public class Rule
      {
@@ -27,6 +27,7 @@ namespace MiniSpring.Views.Pages.ChartsPages.ViewModel
 
 
             #region Private Property
+       
             private List<Rule> RuleRecords = new System.Collections.Generic.List<Rule>();
             #endregion
             #region Public Property
@@ -122,23 +123,23 @@ namespace MiniSpring.Views.Pages.ChartsPages.ViewModel
 
                 }
               
-        }
+             }
             /// <summary>
             /// Procedure..
             /// </summary>
             /// <returns></returns>
-            private async Task FindMyActiveView()
+            public async Task FindMyActiveView()
             {
 
             CheckRPhase = CheckRulesPhase.InChecking;
 
             await RunCommand(() => this.WaitingProgress, async () =>
-        {
+            {
             await CollectFromRules();
             await CompareCurrentViews();
-        });
+            });
            
-        }
-        }
+            }
+            }
     
       }

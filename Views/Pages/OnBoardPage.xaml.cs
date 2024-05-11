@@ -6,6 +6,7 @@ using MiniSpring.Views.Pages.ChartsPages.ViewModel;
 using SkiaSharp;
 using Spring.StaticVM;
 using Spring.ViewModel;
+using Spring.ViewModel.Command;
 using System.ComponentModel;
 
 
@@ -13,7 +14,7 @@ namespace MiniSpring.Views.Pages;
 
 public partial class OnBoardPage : ContentPage
 {
-	 
+     
     public OnBoardPage()
 	{
 
@@ -23,8 +24,6 @@ public partial class OnBoardPage : ContentPage
 
         this.Loaded += OnBoardPage_Loaded;
 
-
-        VMCentral.BasePageViewModel.PropertyChanged += BasePageViewModel_PropertyChanged;
         VMCentral.UsersStatisticsViewModel.PropertyChanged += UsersStatisticsViewModel_PropertyChanged;
 
 
@@ -32,22 +31,7 @@ public partial class OnBoardPage : ContentPage
 
    
 
-    private void BasePageViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        //make sure we are in same VM and same property.
-        if (e.PropertyName == nameof(VMCentral.BasePageViewModel.Loading) && VMCentral.BasePageViewModel.GetType() == typeof(BasePageViewModel))
-        {
-            if (!VMCentral.BasePageViewModel.Loading)
-            {
-                if (VMCentral.BasePageViewModel.CheckRPhase == CheckRulesPhase.InChecking)
-                {
-                    //we ended checking
-                    VMCentral.UsersStatisticsViewModel.GetCountingAndStoreThem.Execute(true);
-                    VMCentral.BasePageViewModel.CheckRPhase = CheckRulesPhase.Non;
-                }
-            }
-        }
-     }
+  
     private void UsersStatisticsViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         //make sure we are in same VM and same property.
@@ -60,6 +44,9 @@ public partial class OnBoardPage : ContentPage
                     //we ended checking
                     VMCentral.DockingManagerViewModel.LoadCurrentChartsCommands.Execute(true);
                     VMCentral.UsersStatisticsViewModel.LoadPhase = LoadDataPhase.Non;
+
+
+
                 }
             }
         }
@@ -68,16 +55,20 @@ public partial class OnBoardPage : ContentPage
     private void OnBoardPage_Loaded(object? sender, EventArgs e)
 
     {
-        VMCentral.DockingManagerViewModel.OverViewSubBoard.Add(
-         new ChartBoard() { NameInRecord = "users", Title = "Users", Details = "Here are users in spring system.", Count = 21, });
+        
+        VMCentral.DockingManagerViewModel.OverViewSubBoard.Clear();
 
-        //solution here as I mentioned before using states as we use before in winforms
-        VMCentral.BasePageViewModel.CheckViewStateOnRules.Execute(true);
+        VMCentral.DockingManagerViewModel.OverViewSubBoard.Add(
+         new ChartBoard() { NameInRecord = "userschart", Title = "Users", Details = "Here are users in spring system." });
+
+
+        VMCentral.DockingManagerViewModel.OverViewSubBoard.Add(
+         new ChartBoard() { NameInRecord = "empschart", Title = "Employees", Details = "Here are employees in company system."});
+
 
        
-      
 
-
-
+        //start action here 
+        VMCentral.UsersStatisticsViewModel.GetCountingAndStoreThem.Execute(true);
     }
 }

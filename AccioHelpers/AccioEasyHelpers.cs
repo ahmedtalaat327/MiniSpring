@@ -18,7 +18,7 @@ namespace Spring.AccioHelpers
         /// <returns></returns>
         public static OracleConnection ReadParamsThenConnectToDB(bool autoclose)
         {   
-            return Scripts.TestConnection(new[] { "192.168.100.45", "1521", "store", "store" }, autoclose);
+            return Scripts.TestConnection(new[] { "192.168.212.34", "1521", "store", "store" }, autoclose);
         }
      
         /// <summary>
